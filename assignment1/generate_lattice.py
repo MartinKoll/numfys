@@ -36,28 +36,30 @@ def generate_triangular_lattice(L)  -> list:
     
     return bonds, N, len(bonds)
 
+def honeycomb_lattice(L):
+    N = L * L
+    bonds = set()
 
-def generate_honeycomb_lattice(L:int) -> list:
-    N = 2 * L * L  # Total number of nodes in the lattice
-    bonds = set()  # Use a set to avoid duplicate bonds
-    
-    for y in range(L):
-        for x in range(L):
-            i = 2 * (y * L + x)  # First node in the hexagonal pair
-            j = i + 1  # Second node in the hexagonal pair
-            
-            # Connect hexagon pair
-            bonds.add((min(i, j), max(i, j)))
-            
-            # Connect to right neighbor (periodic in x)
-            right = 2 * ((y * L + (x + 1) % L))
-            bonds.add((min(j, right), max(j, right)))
-            
-            # Connect to bottom-right neighbor (periodic in y)
-            bottom_right = 2 * (((y + 1) % L) * L + x) + 1
-            bonds.add((min(j, bottom_right), max(j, bottom_right)))
-    
-    return list(bonds), N, len(bonds) 
+    for i in range(N):
+        if (i // L) % 2 == 0:
+            if i % 2 == 0:
+                if (i + 1) % L != 0:
+                    bonds.add((min(i, i + 1), max(i, i + 1)))
+                else:
+                    bonds.add((min(i, i - L + 1), max(i, i - L + 1)))
+        else:
+            if i % 2:
+                if (i + 1) % L != 0:
+                    bonds.add((min(i, i + 1), max(i, i + 1)))
+                else:
+                    bonds.add((min(i, i - L + 1), max(i, i - L + 1)))
+        
+        if (i + L) < N:
+            bonds.add((min(i, i + L), max(i, i + L)))
+        else:
+            bonds.add((min(i, i - N + L), max(i, i - N + L)))
+
+    return list(bonds), N, len(bonds)
 
 def write_bonds_to_file(bonds):
     with open(f"./assignment1/bonds/honeycomb_lattice/bonds{bonds[1]}.txt", 'w') as f:
@@ -79,9 +81,10 @@ def write_bonds_to_file(bonds):
 # L(n) = 3n^2 triangular lattice
 
 #test honeycomb lattice
-L = 6
-bonds = generate_honeycomb_lattice(L)
-write_bonds_to_file(bonds)
-#L(n) = ?
+#L(n) = 1.5 n
+L=[100,200,300,400,500,600,700,800,900,1000]
+for l in L:
+    bonds = honeycomb_lattice(l)
+    write_bonds_to_file(bonds)
 
 print("done")

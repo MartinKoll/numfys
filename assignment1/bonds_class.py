@@ -46,8 +46,8 @@ class bonds:
             if i&((self.number_of_bonds)//200)==0:
                 self.steps.append(i/self.number_of_bonds)
                 self.probability.append(self.largest_cluster_size/self.N)
-            # if i%((self.number_of_bonds)//20) == 0:
-            #     self.visualize(f"{i}")
+            if i%((self.number_of_bonds)//70) == 0:
+                 self.visualize(f"{i}", it=i)
 
     def find_root(self, index):
         if self.sites[index] < 0:
@@ -75,17 +75,21 @@ class bonds:
                 self.largest_cluster_size = -self.sites[root2]
                 self.largest_cluster_index = root2
 
-    def visualize(self, title=""):
+    def visualize(self, title="", it=0):
         #cluster_nodes = np.where(self.sites == largest_cluster_index, 1, 0).reshape(self.L, self.L)
         cluster_nodes = np.zeros((self.L, self.L))
         for i in range(self.sites.shape[0]):
-            site = find_root(i)
+            site = self.find_root(i)
             if site == self.largest_cluster_index:
                 cluster_nodes[i//self.L, i%self.L] = 1
 
-        plt.imshow(cluster_nodes, cmap=ListedColormap(["white", "blue"]), vmin=0, vmax=1)
-        plt.title(f"Largest Cluster at {title} iterations")
-        plt.savefig(f"./assignment1/pics/frame_{title}.png")
+        fig, ax = plt.subplots()
+        ax.imshow(cluster_nodes, cmap=ListedColormap(["white", "blue"]), vmin=0, vmax=1)
+        ax.set_title(f"Largest Cluster at iteration = {it} ")
+        ax.grid(False)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        plt.savefig(f"./assignment1/pics/visualize/frame_{it}.png")
         #plt.show()
 
     def plot_p(self):
@@ -103,8 +107,7 @@ class bonds:
                 f.write(f"{self.steps[i]} {self.probability[i]}\n")      
 
 
-#bonds1 = bonds("bonds1000.txt")
-#bonds1.shuffle_bonds()
-#bonds1.activate_bonds(0)
-#bonds1.visualize("end")
-#bonds1.plot_p()
+bonds1 = bonds("bonds40000.txt", type='square')
+bonds1.shuffle_bonds()
+bonds1.activate_bonds(0)
+bonds1.visualize("end")
